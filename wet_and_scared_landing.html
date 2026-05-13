@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;700;800&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    min-height: 100vh;
+    background: #050d1a;
+    color: #e8f4ff;
+    font-family: 'Syne', sans-serif;
+    overflow-x: hidden;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+  }
+
+  .bg {
+    position: fixed;
+    inset: 0;
+    background: radial-gradient(ellipse at 30% 60%, #0a2a4a 0%, #050d1a 60%);
+    z-index: 0;
+  }
+
+  .bubbles {
+    position: fixed;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
+  }
+
+  .bubble {
+    position: absolute;
+    bottom: -60px;
+    border-radius: 50%;
+    background: rgba(100, 200, 255, 0.06);
+    border: 1px solid rgba(100, 200, 255, 0.1);
+    animation: rise linear infinite;
+  }
+
+  @keyframes rise {
+    0% { transform: translateY(0) translateX(0); opacity: 0; }
+    10% { opacity: 1; }
+    90% { opacity: 0.6; }
+    100% { transform: translateY(-110vh) translateX(20px); opacity: 0; }
+  }
+
+  .scanlines {
+    position: fixed;
+    inset: 0;
+    background: repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 3px,
+      rgba(0,0,0,0.07) 3px,
+      rgba(0,0,0,0.07) 4px
+    );
+    z-index: 2;
+    pointer-events: none;
+  }
+
+  .content {
+    position: relative;
+    z-index: 10;
+    text-align: center;
+    padding: 3rem 2rem;
+    max-width: 560px;
+  }
+
+  .tag {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.25em;
+    color: #4dc8f0;
+    text-transform: uppercase;
+    margin-bottom: 2rem;
+    opacity: 0.8;
+  }
+
+  .logo {
+    font-size: clamp(52px, 12vw, 88px);
+    font-weight: 800;
+    line-height: 0.95;
+    letter-spacing: -0.03em;
+    color: #e8f4ff;
+    margin-bottom: 0.5rem;
+    text-shadow: 0 0 60px rgba(77, 200, 240, 0.2);
+  }
+
+  .logo .amp {
+    color: #4dc8f0;
+  }
+
+  .sub {
+    font-family: 'Space Mono', monospace;
+    font-size: 12px;
+    color: rgba(200, 230, 255, 0.4);
+    letter-spacing: 0.1em;
+    margin-bottom: 3.5rem;
+  }
+
+  .depth-meter {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    margin-bottom: 3rem;
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    color: rgba(77, 200, 240, 0.6);
+  }
+
+  .depth-bar {
+    width: 80px;
+    height: 1px;
+    background: rgba(77, 200, 240, 0.2);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .depth-bar::after {
+    content: '';
+    position: absolute;
+    top: 0; left: -100%;
+    width: 100%; height: 100%;
+    background: #4dc8f0;
+    animation: scan 3s ease-in-out infinite;
+  }
+
+  @keyframes scan {
+    0% { left: -100%; }
+    100% { left: 100%; }
+  }
+
+  .join-btn {
+    display: inline-block;
+    padding: 18px 52px;
+    background: transparent;
+    border: 1px solid rgba(77, 200, 240, 0.5);
+    color: #4dc8f0;
+    font-family: 'Space Mono', monospace;
+    font-size: 13px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    text-decoration: none;
+    cursor: pointer;
+    position: relative;
+    transition: all 0.3s ease;
+    overflow: hidden;
+  }
+
+  .join-btn::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: rgba(77, 200, 240, 0.08);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.3s ease;
+  }
+
+  .join-btn:hover::before {
+    transform: scaleX(1);
+  }
+
+  .join-btn:hover {
+    border-color: #4dc8f0;
+    color: #a8e8ff;
+    letter-spacing: 0.2em;
+  }
+
+  .footer-note {
+    margin-top: 4rem;
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    color: rgba(200, 230, 255, 0.2);
+    letter-spacing: 0.08em;
+  }
+
+  .pressure-warning {
+    display: inline-block;
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    color: rgba(255, 160, 80, 0.5);
+    border: 1px solid rgba(255, 160, 80, 0.2);
+    padding: 4px 12px;
+    margin-bottom: 2rem;
+    letter-spacing: 0.12em;
+    animation: blink 4s ease-in-out infinite;
+  }
+
+  @keyframes blink {
+    0%, 90%, 100% { opacity: 0.5; }
+    95% { opacity: 1; }
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .content > * {
+    animation: fadeUp 0.8s ease both;
+  }
+  .content > *:nth-child(1) { animation-delay: 0.1s; }
+  .content > *:nth-child(2) { animation-delay: 0.2s; }
+  .content > *:nth-child(3) { animation-delay: 0.3s; }
+  .content > *:nth-child(4) { animation-delay: 0.4s; }
+  .content > *:nth-child(5) { animation-delay: 0.5s; }
+  .content > *:nth-child(6) { animation-delay: 0.6s; }
+  .content > *:nth-child(7) { animation-delay: 0.7s; }
+</style>
+</head>
+<body>
+  <div class="bg"></div>
+  <div class="bubbles" id="bubbles"></div>
+  <div class="scanlines"></div>
+
+  <div class="content">
+    <p class="tag">Subnautica 2 — Community</p>
+    <h1 class="logo">Wet<span class="amp">&</span><br>Scared</h1>
+    <p class="sub">// a discord server for drowning together</p>
+    <div class="pressure-warning">⚠ hull integrity: unknown</div>
+    <div class="depth-meter">
+      <div class="depth-bar"></div>
+      <span>scanning depth</span>
+      <div class="depth-bar"></div>
+    </div>
+    <a href="#" class="join-btn">Join the server</a>
+    <p class="footer-note">abandon all hope / touch skill issue / no oxygen</p>
+  </div>
+
+  <script>
+    const container = document.getElementById('bubbles');
+    for (let i = 0; i < 18; i++) {
+      const b = document.createElement('div');
+      b.className = 'bubble';
+      const size = Math.random() * 40 + 10;
+      b.style.cssText = `
+        width: ${size}px;
+        height: ${size}px;
+        left: ${Math.random() * 100}%;
+        animation-duration: ${Math.random() * 12 + 8}s;
+        animation-delay: ${Math.random() * 10}s;
+      `;
+      container.appendChild(b);
+    }
+  </script>
+</body>
+</html>
